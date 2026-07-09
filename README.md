@@ -5,6 +5,8 @@ A conversational AI analytics assistant for small hospitality businesses. Pilot 
 AIM 5012 — Foundations and Practice of Effective Coding with AI, Summer 2026.
 Team: Alwyn Munatsi, Erasmus Tsuro.
 
+**Live demo:** https://poursight-vq95.onrender.com/ (free-tier hosting — the first request after idling may take a few seconds to wake up)
+
 ## Status
 
 Backend (data, query engine, NL->SQL, answer generation, playbook, retrieval, API) and frontend chat UI are wired end to end and verified working against a real LLM (Groq, Llama 3.3 70B). Needs a `GROQ_API_KEY` in `.env` to actually answer questions — see `PROMPTS.md` for prompt design notes and `SKILL.md` for the reusable skill definition.
