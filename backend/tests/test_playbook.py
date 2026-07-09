@@ -63,13 +63,44 @@ def test_no_rules_fire_on_empty_result():
     assert match_playbook([]) == []
 
 
-def test_multiple_rules_can_fire_together():
+def test_low_margin_rule_tolerates_a_differently_aliased_column():
+    # The model might call this "profit_margin_pct" instead of "margin_pct" for a
+    # different phrasing of the same question — the rule must still catch it.
+    rows = [{"item_name": "Fish & Chips", "profit_margin_pct": 40.0}]
+    matches = match_playbook(rows)
+    assert any(m.rule_id == "low_margin_items" for m in matches)
+
+
+def test_low_margin_rule_normalizes_a_raw_fraction_to_percent():
+    # (price_usd - cost_usd) / price_usd returned as-is, not multiplied by 100.
+    rows = [{"item_name": "Fish & Chips", "margin_ratio": 0.40}]
+    matches = match_playbook(rows)
+    low_margin = next(m for m in matches if m.rule_id == "low_margin_items")
+    assert "40.0%" in low_margin.recommendation
+
+
+def test_low_stock_rule_tolerates_differently_aliased_columns():
+    rows = [{"name": "Fish Fillet (imported)", "current_stock": 4, "reorder_point": 6}]
+    matches = match_playbook(rows)
+    assert any(m.rule_id == "low_stock_ingredients" for m in matches)
+
+
+def test_match_day_lift_rule_tolerates_differently_aliased_flag_column():
     rows = [
-        {"item_name": "Fish & Chips", "margin_pct": 40.0},
+        {"was_match_day": 0, "avg_beer_units_per_order": 1.00},
+        {"was_match_day": 1, "avg_beer_units_per_order": 1.30},
+    ]
+    matches = match_playbook(rows)
+    assert any(m.rule_id == "match_day_lift" for m in matches)
+
+
+def test_rules_are_independent_of_each_other():
+    # Each call sees a realistic, uniform-shape result (as any single SQL query would
+    # actually return) and only its own rule should fire.
+    margin_rows = [{"item_name": "Fish & Chips", "margin_pct": 40.0}]
+    match_day_rows = [
         {"is_match_day": 0, "avg_beer_units_per_order": 1.0},
         {"is_match_day": 1, "avg_beer_units_per_order": 1.5},
     ]
-    # Not realistic as one query's output, but proves rules are independent of each other.
-    matches = match_playbook(rows)
-    ids = {m.rule_id for m in matches}
-    assert {"low_margin_items", "match_day_lift"} <= ids
+    assert {m.rule_id for m in match_playbook(margin_rows)} == {"low_margin_items"}
+    assert {m.rule_id for m in match_playbook(match_day_rows)} == {"match_day_lift"}

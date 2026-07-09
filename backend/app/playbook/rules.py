@@ -6,6 +6,11 @@ if it doesn't apply. This is deliberately not an LLM call: recommendations
 come only from this fixed set, matching the proposal's "small fixed
 playbook" scope rather than free-form generation. Stage 2 (answer_gen.py)
 picks at most one matched candidate to surface; it never invents its own.
+
+Columns are matched by substring, not exact name, since the NL->SQL model
+chooses its own aliases per question (e.g. "profit_margin" as often as
+"margin_pct") — an exact-name check would silently miss any phrasing that
+doesn't happen to match the few-shot examples' wording.
 """
 
 from dataclasses import dataclass
@@ -21,31 +26,45 @@ class PlaybookMatch:
     recommendation: str
 
 
+def _find_key(row: dict, *substrings: str) -> str | None:
+    return next((k for k in row if any(s in k.lower() for s in substrings)), None)
+
+
 def _low_margin_items(rows: list[dict]) -> PlaybookMatch | None:
-    candidates = [
-        r for r in rows
-        if isinstance(r.get("margin_pct"), (int, float)) and r["margin_pct"] < LOW_MARGIN_THRESHOLD_PCT
-    ]
-    if not candidates:
+    scored = []
+    for r in rows:
+        key = _find_key(r, "margin")
+        if key is None or not isinstance(r.get(key), (int, float)):
+            continue
+        raw = r[key]
+        # Some phrasings get the model to return the raw (price-cost)/price fraction
+        # instead of the *100 percentage shown in the few-shot example — normalize.
+        pct = raw * 100 if abs(raw) <= 1 else raw
+        if pct < LOW_MARGIN_THRESHOLD_PCT:
+            scored.append((pct, r))
+    if not scored:
         return None
-    worst = min(candidates, key=lambda r: r["margin_pct"])
-    name = worst.get("item_name") or worst.get("name") or "This item"
+    worst_pct, worst_row = min(scored, key=lambda pair: pair[0])
+    name = worst_row.get("item_name") or worst_row.get("name") or "This item"
     return PlaybookMatch(
         rule_id="low_margin_items",
         recommendation=(
-            f"{name}'s margin is {worst['margin_pct']}%, below the {LOW_MARGIN_THRESHOLD_PCT:.0f}% "
+            f"{name}'s margin is {worst_pct:.1f}%, below the {LOW_MARGIN_THRESHOLD_PCT:.0f}% "
             "target — consider a small price increase or a cheaper supplier for its ingredients."
         ),
     )
 
 
 def _low_stock_ingredients(rows: list[dict]) -> PlaybookMatch | None:
-    candidates = [
-        r for r in rows
-        if isinstance(r.get("stock_on_hand"), (int, float))
-        and isinstance(r.get("reorder_level"), (int, float))
-        and r["stock_on_hand"] <= r["reorder_level"]
-    ]
+    candidates = []
+    for r in rows:
+        stock_key = _find_key(r, "stock")
+        reorder_key = _find_key(r, "reorder")
+        if stock_key is None or reorder_key is None:
+            continue
+        stock, reorder = r.get(stock_key), r.get(reorder_key)
+        if isinstance(stock, (int, float)) and isinstance(reorder, (int, float)) and stock <= reorder:
+            candidates.append(r)
     if not candidates:
         return None
     names = ", ".join(r.get("name", "an ingredient") for r in candidates[:3])
@@ -57,11 +76,14 @@ def _low_stock_ingredients(rows: list[dict]) -> PlaybookMatch | None:
 
 
 def _match_day_lift(rows: list[dict]) -> PlaybookMatch | None:
-    by_flag = {r["is_match_day"]: r for r in rows if "is_match_day" in r}
+    flag_key = _find_key(rows[0], "match_day") if rows else None
+    if flag_key is None:
+        return None
+    by_flag = {r[flag_key]: r for r in rows if flag_key in r}
     if 0 not in by_flag or 1 not in by_flag:
         return None
     metric_key = next(
-        (k for k, v in by_flag[1].items() if k != "is_match_day" and isinstance(v, (int, float))), None
+        (k for k, v in by_flag[1].items() if k != flag_key and isinstance(v, (int, float))), None
     )
     if metric_key is None:
         return None
@@ -83,9 +105,7 @@ def _match_day_lift(rows: list[dict]) -> PlaybookMatch | None:
 def _concentrated_best_sellers(rows: list[dict]) -> PlaybookMatch | None:
     if len(rows) < 3:
         return None
-    qty_key = next(
-        (k for k in rows[0] if any(token in k for token in ("qty", "units", "quantity"))), None
-    )
+    qty_key = _find_key(rows[0], "qty", "units", "quantity")
     if qty_key is None:
         return None
     values = [r.get(qty_key) for r in rows]
