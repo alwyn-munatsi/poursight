@@ -1,0 +1,12 @@
+.venv/
+venv/
+node_modules/
+__pycache__/
+*.pyc
+.git/
+.env
+.env.example
+frontend/dist/
+backend/app/db/*.db
+backend/.pytest_cache/
+backend/eval/report.md
