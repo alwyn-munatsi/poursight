@@ -6,7 +6,7 @@ correctness, numeric accuracy, and hallucination rate metrics.
 
 import math
 
-NUMERIC_REL_TOL = 0.02  # 2% — enough to absorb rounding/formatting, not enough to hide a real miss
+NUMERIC_REL_TOL = 0.02  # 2% - enough to absorb rounding/formatting, not enough to hide a real miss
 NUMERIC_ABS_TOL = 0.01
 
 

@@ -1,7 +1,7 @@
 """Stage 1: turn a manager's plain-English question into a QueryPlan.
 
 The model is forced (tool_choice) to call emit_query_plan, so the response is
-always the constrained JSON shape in schemas.QueryPlan — never free text. The
+always the constrained JSON shape in schemas.QueryPlan - never free text. The
 SQL it returns is untrusted until it passes app.db.query_engine.run_query().
 """
 
@@ -31,9 +31,9 @@ SCHEMA_DESCRIPTION = """\
 - orders(order_id, order_datetime, day_of_week, is_weekend, is_match_day, payment_method, currency, table_number)
     payment_method is one of: ecocash, cash_usd, cash_zwg, card.
 - order_items(order_item_id, order_id, item_id, quantity, unit_price_usd, line_total_usd)
-    one row per menu item within an order — an order usually has several rows.
+    one row per menu item within an order - an order usually has several rows.
     For a per-*order* metric (e.g. average order value), first SUM(line_total_usd)
-    grouped by order_id, then aggregate across orders — don't aggregate line_total_usd
+    grouped by order_id, then aggregate across orders - don't aggregate line_total_usd
     directly, that computes a per-*item* metric instead.\
 """
 
@@ -147,7 +147,7 @@ def build_system_prompt(today: str) -> str:
         f"{SCHEMA_DESCRIPTION}\n\n"
         "Rules:\n"
         "- Only ever produce a single read-only SELECT (or WITH ... SELECT) statement.\n"
-        "- Only reference the tables and columns listed above — nothing else exists.\n"
+        "- Only reference the tables and columns listed above - nothing else exists.\n"
         "- Never inline a literal value from the question directly into the SQL string; put it in "
         "params and use a ? placeholder instead.\n"
         "- Margins are computed as (price_usd - cost_usd) / price_usd.\n"

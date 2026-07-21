@@ -3,7 +3,7 @@
 **Category:** Starter  
 **Price:** $4.00
 
-Pan-fried chicken livers in a peri-peri sauce — a popular starter with regulars.
+Pan-fried chicken livers in a peri-peri sauce - a popular starter with regulars.
 
 ## Ingredients
 - Chicken Livers (raw) (0.3 kg per serving)

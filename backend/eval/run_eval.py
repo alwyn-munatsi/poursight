@@ -6,7 +6,7 @@ real pipeline and scores three things per the proposal:
 - hallucination rate: of everything the answer cited, what fraction wasn't
   actually in the model's own query result?
 
-Each case supplies a `gold_sql` we authored ourselves — a single-row,
+Each case supplies a `gold_sql` we authored ourselves - a single-row,
 single-column ("gold_value") query we trust is correct. Query correctness and
 numeric accuracy are both scored by checking whether that gold value shows up
 (via app.llm.grounding.values_match, so int/float/rounding differences don't
@@ -127,7 +127,7 @@ def write_report(results: list[dict], summary: dict, path: Path = REPORT_PATH) -
 
 def main() -> None:
     if not config.GROQ_API_KEY:
-        print("GROQ_API_KEY is not set — add it to .env before running the eval harness.", file=sys.stderr)
+        print("GROQ_API_KEY is not set - add it to .env before running the eval harness.", file=sys.stderr)
         sys.exit(1)
 
     build_docs()

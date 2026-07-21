@@ -1,7 +1,7 @@
 """The fixed recommendation playbook.
 
-Each rule inspects the *shape* of a query result — which columns are present,
-what the values look like — and returns a candidate recommendation, or None
+Each rule inspects the *shape* of a query result - which columns are present,
+what the values look like - and returns a candidate recommendation, or None
 if it doesn't apply. This is deliberately not an LLM call: recommendations
 come only from this fixed set, matching the proposal's "small fixed
 playbook" scope rather than free-form generation. Stage 2 (answer_gen.py)
@@ -9,7 +9,7 @@ picks at most one matched candidate to surface; it never invents its own.
 
 Columns are matched by substring, not exact name, since the NL->SQL model
 chooses its own aliases per question (e.g. "profit_margin" as often as
-"margin_pct") — an exact-name check would silently miss any phrasing that
+"margin_pct") - an exact-name check would silently miss any phrasing that
 doesn't happen to match the few-shot examples' wording.
 """
 
@@ -38,7 +38,7 @@ def _low_margin_items(rows: list[dict]) -> PlaybookMatch | None:
             continue
         raw = r[key]
         # Some phrasings get the model to return the raw (price-cost)/price fraction
-        # instead of the *100 percentage shown in the few-shot example — normalize.
+        # instead of the *100 percentage shown in the few-shot example - normalize.
         pct = raw * 100 if abs(raw) <= 1 else raw
         if pct < LOW_MARGIN_THRESHOLD_PCT:
             scored.append((pct, r))
@@ -50,7 +50,7 @@ def _low_margin_items(rows: list[dict]) -> PlaybookMatch | None:
         rule_id="low_margin_items",
         recommendation=(
             f"{name}'s margin is {worst_pct:.1f}%, below the {LOW_MARGIN_THRESHOLD_PCT:.0f}% "
-            "target — consider a small price increase or a cheaper supplier for its ingredients."
+            "target - consider a small price increase or a cheaper supplier for its ingredients."
         ),
     )
 
@@ -71,7 +71,7 @@ def _low_stock_ingredients(rows: list[dict]) -> PlaybookMatch | None:
     verb = "is" if len(candidates) == 1 else "are"
     return PlaybookMatch(
         rule_id="low_stock_ingredients",
-        recommendation=f"{names} {verb} at or below the reorder level — place a restock order soon.",
+        recommendation=f"{names} {verb} at or below the reorder level - place a restock order soon.",
     )
 
 
@@ -96,7 +96,7 @@ def _match_day_lift(rows: list[dict]) -> PlaybookMatch | None:
     return PlaybookMatch(
         rule_id="match_day_lift",
         recommendation=(
-            f"Match days lift this by about {lift_pct:.0f}% — make sure beer stock and extra staff "
+            f"Match days lift this by about {lift_pct:.0f}% - make sure beer stock and extra staff "
             "are scheduled ahead of Arsenal fixtures."
         ),
     )
@@ -119,7 +119,7 @@ def _concentrated_best_sellers(rows: list[dict]) -> PlaybookMatch | None:
     return PlaybookMatch(
         rule_id="concentrated_best_sellers",
         recommendation=(
-            f"{top_name} alone accounts for about {share_pct:.0f}% of the units shown here — make "
+            f"{top_name} alone accounts for about {share_pct:.0f}% of the units shown here - make "
             "sure it never runs out of stock, since it's carrying a disproportionate share of sales."
         ),
     )

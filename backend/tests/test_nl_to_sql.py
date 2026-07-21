@@ -2,7 +2,7 @@
 
 The schema/reference-date tests need no API key. The live tests actually call
 Groq and are skipped unless GROQ_API_KEY is set (e.g. in CI or once a
-teammate has added a key to .env) — they exist so we can run them by hand
+teammate has added a key to .env) - they exist so we can run them by hand
 whenever the prompt changes, not so every `pytest` run costs money.
 """
 

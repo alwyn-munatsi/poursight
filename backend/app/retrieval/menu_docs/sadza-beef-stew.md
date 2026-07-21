@@ -3,7 +3,7 @@
 **Category:** Sadza & Sides  
 **Price:** $5.50
 
-A mound of stiff maize-meal sadza served with a rich beef stew — the most traditional Zimbabwean combination on the menu.
+A mound of stiff maize-meal sadza served with a rich beef stew - the most traditional Zimbabwean combination on the menu.
 
 ## Ingredients
 - Maize Meal (0.25 kg per serving)

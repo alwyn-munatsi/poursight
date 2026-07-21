@@ -1,5 +1,5 @@
 # Multi-stage build so the deployed image needs neither Node nor npm at
-# runtime — just the built static frontend, served by FastAPI itself
+# runtime - just the built static frontend, served by FastAPI itself
 # (single-service deploy: one process, one origin, no CORS/proxy to configure).
 
 FROM node:20-slim AS frontend-build

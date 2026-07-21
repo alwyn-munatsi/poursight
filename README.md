@@ -2,16 +2,16 @@
 
 A conversational AI analytics assistant for small hospitality businesses. Pilot case study: The Arsenal Bar & Grill, Bindura, Zimbabwe.
 
-AIM 5012 — Foundations and Practice of Effective Coding with AI, Summer 2026.
+AIM 5012 - Foundations and Practice of Effective Coding with AI, Summer 2026.
 Team: Alwyn Munatsi, Erasmus Tsuro.
 
-**Live demo:** https://poursight-vq95.onrender.com/ (free-tier hosting — the first request after idling may take a few seconds to wake up)
+**Live demo:** https://poursight-vq95.onrender.com/ (free-tier hosting - the first request after idling may take a few seconds to wake up)
 
 ## Status
 
-Backend (data, query engine, NL->SQL, answer generation, playbook, retrieval, API) and frontend chat UI are wired end to end and verified working against a real LLM (Groq, Llama 3.3 70B). Needs a `GROQ_API_KEY` in `.env` to actually answer questions — see `PROMPTS.md` for prompt design notes and `SKILL.md` for the reusable skill definition.
+Backend (data, query engine, NL->SQL, answer generation, playbook, retrieval, API) and frontend chat UI are wired end to end and verified working against a real LLM (Groq, Llama 3.3 70B). Needs a `GROQ_API_KEY` in `.env` to actually answer questions - see `PROMPTS.md` for prompt design notes and `SKILL.md` for the reusable skill definition.
 
-**LLM provider:** Groq (`api.groq.com`), not Anthropic/OpenAI directly — chosen because Groq's API is OpenAI-compatible (so the `openai` SDK works against it with just a `base_url` override) and it hosts capable open-weight models with fast, cheap inference. See `app/llm/client.py`.
+**LLM provider:** Groq (`api.groq.com`), not Anthropic/OpenAI directly - chosen because Groq's API is OpenAI-compatible (so the `openai` SDK works against it with just a `base_url` override) and it hosts capable open-weight models with fast, cheap inference. See `app/llm/client.py`.
 
 ## Project layout
 
@@ -87,17 +87,17 @@ python -m eval.run_eval
 ```
 
 Scores three things per case, writing `backend/eval/report.md`:
-- **Query correctness** — does the model's generated SQL actually retrieve the right data?
-- **Numeric accuracy** — does the final answer state the right number/fact?
-- **Hallucination rate** — of everything the answer cites, what fraction wasn't actually in its own query result?
+- **Query correctness** - does the model's generated SQL actually retrieve the right data?
+- **Numeric accuracy** - does the final answer state the right number/fact?
+- **Hallucination rate** - of everything the answer cites, what fraction wasn't actually in its own query result?
 
-Each case supplies a hand-authored `gold_sql` (trusted, single `gold_value` column) rather than an expected SQL string to match against — two different `SELECT`s can both be correct if they return the same data, so the harness checks results, not query text. See `PROMPTS.md` for the full design rationale.
+Each case supplies a hand-authored `gold_sql` (trusted, single `gold_value` column) rather than an expected SQL string to match against - two different `SELECT`s can both be correct if they return the same data, so the harness checks results, not query text. See `PROMPTS.md` for the full design rationale.
 
-**Latest results** (see `backend/eval/report.md` for the per-case breakdown, and its status note for why this isn't a same-day re-run): 20/20 cases completed, **95% query correctness, 75% numeric accuracy, 0% hallucination rate**. Groq's free tier caps at 100K tokens/day, which is enough for normal development but not for repeated full 20-case runs in one sitting — budget for that if evaluating further.
+**Latest results** (see `backend/eval/report.md` for the per-case breakdown, and its status note for why this isn't a same-day re-run): 20/20 cases completed, **95% query correctness, 75% numeric accuracy, 0% hallucination rate**. Groq's free tier caps at 100K tokens/day, which is enough for normal development but not for repeated full 20-case runs in one sitting - budget for that if evaluating further.
 
 ## Deployment
 
-Single-service deploy: one Docker image builds the frontend, then serves it from FastAPI at the same origin as the API — no separate frontend host, no CORS/proxy config needed in production (`app/main.py` mounts `frontend/dist` as static files after the API routes, only if that directory exists).
+Single-service deploy: one Docker image builds the frontend, then serves it from FastAPI at the same origin as the API - no separate frontend host, no CORS/proxy config needed in production (`app/main.py` mounts `frontend/dist` as static files after the API routes, only if that directory exists).
 
 Build and run locally:
 
@@ -106,6 +106,6 @@ docker build -t poursight .
 docker run -p 8000:8000 --env-file .env poursight
 ```
 
-The dataset and retrieval corpus are regenerated at image build time (deterministic, no persistent volume needed). Only `GROQ_API_KEY` needs to be supplied at runtime (via `--env-file .env` locally, or as a platform environment variable in production — never baked into the image; `.dockerignore` excludes `.env`).
+The dataset and retrieval corpus are regenerated at image build time (deterministic, no persistent volume needed). Only `GROQ_API_KEY` needs to be supplied at runtime (via `--env-file .env` locally, or as a platform environment variable in production - never baked into the image; `.dockerignore` excludes `.env`).
 
 To deploy: push this Dockerfile to any container host (Render, Railway, Fly.io) as a Docker-based web service, set `GROQ_API_KEY` in its environment variables, and point it at this repo. The container listens on `$PORT` (defaults to 8000).

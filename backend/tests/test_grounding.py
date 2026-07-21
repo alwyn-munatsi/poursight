@@ -18,7 +18,7 @@ def test_ungrounded_values_lists_only_the_missing_ones():
 
 
 def test_is_grounded_tolerates_int_vs_float_formatting():
-    # 40 (int) vs 40.0 (float) are "the same" cited fact — a naive str() comparison
+    # 40 (int) vs 40.0 (float) are "the same" cited fact - a naive str() comparison
     # would wrongly call this ungrounded.
     rows = [{"margin_pct": 40.0}]
     assert is_grounded([40], rows) is True

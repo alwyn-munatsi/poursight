@@ -19,7 +19,7 @@ from app.playbook.rules import match_playbook
 from app.retrieval.embed_docs import retrieve_context
 
 # ValidationError/RuntimeError: the model didn't call the tool, or called it with a bad shape.
-# openai.OpenAIError: any real failure talking to Groq (auth, rate limit, connection, timeout) —
+# openai.OpenAIError: any real failure talking to Groq (auth, rate limit, connection, timeout) -
 # the openai SDK's base exception, used here since Groq's API is OpenAI-compatible.
 LLM_ERRORS = (ValidationError, RuntimeError, openai.OpenAIError)
 
@@ -56,7 +56,7 @@ def ask(request: AskRequest) -> AskResponse:
     if not config.GROQ_API_KEY:
         raise HTTPException(
             status_code=503,
-            detail="GROQ_API_KEY is not configured on the server — add it to .env and restart.",
+            detail="GROQ_API_KEY is not configured on the server - add it to .env and restart.",
         )
 
     try:

@@ -3,7 +3,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
-const PALETTE = ['#A8622A', '#3F6B5C', '#C9A227', '#8B4A6B', '#4B7A9B', '#B0503B'];
+const PALETTE = ['#2563EB', '#0D9488', '#7C3AED', '#059669', '#DC2626', '#64748B'];
 
 const TOOLTIP_STYLE = {
   backgroundColor: '#ffffff',

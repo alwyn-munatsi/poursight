@@ -41,7 +41,7 @@ def test_rejected_before_reaching_sqlite(sql):
 
 def test_count_star_is_allowed_on_a_whitelisted_table():
     # COUNT(*) triggers an internal rowid-only read with an empty column name,
-    # not a real column — regression test for that authorizer edge case.
+    # not a real column - regression test for that authorizer edge case.
     result = run_query("SELECT COUNT(*) AS n FROM orders")
     assert result.rows[0]["n"] > 0
 

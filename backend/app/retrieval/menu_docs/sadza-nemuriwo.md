@@ -3,7 +3,7 @@
 **Category:** Sadza & Sides  
 **Price:** $4.00
 
-Sadza served with sauteed covo/rape (a leafy green also called muriwo) — a lighter vegetarian option.
+Sadza served with sauteed covo/rape (a leafy green also called muriwo) - a lighter vegetarian option.
 
 ## Ingredients
 - Maize Meal (0.25 kg per serving)

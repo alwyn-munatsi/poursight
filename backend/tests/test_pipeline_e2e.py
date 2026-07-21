@@ -1,7 +1,7 @@
 """End-to-end smoke test for the full question -> answer pipeline
 (Phases 02-05 wired together). A small preview of what the Phase 08 eval
 harness will do at scale; skipped without GROQ_API_KEY like the other
-live tests. The actual API route handler doesn't exist until Phase 06 — this
+live tests. The actual API route handler doesn't exist until Phase 06 - this
 test inlines the same orchestration ad hoc, just to prove the pieces compose.
 """
 

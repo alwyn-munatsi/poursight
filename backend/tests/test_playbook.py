@@ -65,7 +65,7 @@ def test_no_rules_fire_on_empty_result():
 
 def test_low_margin_rule_tolerates_a_differently_aliased_column():
     # The model might call this "profit_margin_pct" instead of "margin_pct" for a
-    # different phrasing of the same question — the rule must still catch it.
+    # different phrasing of the same question - the rule must still catch it.
     rows = [{"item_name": "Fish & Chips", "profit_margin_pct": 40.0}]
     matches = match_playbook(rows)
     assert any(m.rule_id == "low_margin_items" for m in matches)

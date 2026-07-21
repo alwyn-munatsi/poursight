@@ -3,7 +3,7 @@
 **Category:** Starter  
 **Price:** $4.50
 
-Chicken wings tossed in peri-peri sauce and grilled — a popular starter to share.
+Chicken wings tossed in peri-peri sauce and grilled - a popular starter to share.
 
 ## Ingredients
 - Chicken Quarters (0.3 kg per serving)

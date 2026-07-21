@@ -1,7 +1,7 @@
 """A small, dependency-free TF-IDF retrieval index over the menu/recipe docs.
 
 The corpus is tiny (~17 short documents) and static, so a neural embedding
-model would be overkill for this project's scope — classic TF-IDF + cosine
+model would be overkill for this project's scope - classic TF-IDF + cosine
 similarity is enough to route a question like "what's in the peri-peri
 chicken?" to the right doc, and it needs no API key, network call, or extra
 ML dependency. search() is the only thing callers depend on, so this could

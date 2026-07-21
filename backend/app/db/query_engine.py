@@ -6,7 +6,7 @@ to run something unintended:
   2. SQLite authorizer: every table/column/function touched is checked against
      an explicit whitelist as the statement compiles.
   3. The connection itself is opened read-only at the OS/SQLite level
-     (see connection.py) — writes fail even if 1 and 2 are bypassed.
+     (see connection.py) - writes fail even if 1 and 2 are bypassed.
 
 Every question the LLM turns into SQL runs through `run_query()`.
 """
@@ -19,7 +19,7 @@ from app.db.connection import get_connection
 MAX_ROWS = 500
 
 # Column names as they appear in schema.sql. This is the single source of
-# truth for what a generated query is allowed to touch — kept in sync with
+# truth for what a generated query is allowed to touch - kept in sync with
 # the schema by tests/test_query_engine.py, not by introspecting it live.
 ALLOWED_TABLES: dict[str, set[str]] = {
     "menu_items": {"item_id", "name", "category", "price_usd", "cost_usd", "is_active"},
@@ -74,7 +74,7 @@ def _authorizer(action, arg1, arg2, dbname, source):  # noqa: ANN001 - fixed sql
         allowed_columns = ALLOWED_TABLES.get(table)
         if not allowed_columns:
             return sqlite3.SQLITE_DENY
-        # COUNT(*) and similar don't touch a specific column — SQLite reports an
+        # COUNT(*) and similar don't touch a specific column - SQLite reports an
         # empty column name for that internal rowid-only read. The table is
         # already fully whitelisted, so this exposes nothing beyond "a row exists".
         if column in allowed_columns or column == "":

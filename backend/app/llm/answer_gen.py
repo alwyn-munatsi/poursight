@@ -1,7 +1,7 @@
 """Stage 2: turn a query result into a grounded natural-language answer.
 
 Forced tool_choice again, so the response is always the AnswerPlan shape.
-Recommendations are never freely generated here — the model must pick one of
+Recommendations are never freely generated here - the model must pick one of
 the playbook's candidate strings (light rewording is fine) or return null.
 """
 
@@ -57,13 +57,13 @@ def build_system_prompt() -> str:
     return (
         "You are PourSight's answer writer for The Arsenal Bar & Grill. You are given the exact "
         "rows a SQL query returned and must describe them accurately in plain English for a busy "
-        "manager — never invent a fact that isn't in the rows.\n\n"
+        "manager - never invent a fact that isn't in the rows.\n\n"
         "Rules:\n"
         "- Every number or name you state in answer_text as fact (item names, categories, amounts, "
         "counts, percentages) must come directly from the provided rows.\n"
         "- List every such fact in cited_values, exactly as given (same type, same spelling/precision) "
-        "— this includes item/category names, not just numbers.\n"
-        "- If candidate recommendations are provided, choose the single most relevant one — you may "
+        "- this includes item/category names, not just numbers.\n"
+        "- If candidate recommendations are provided, choose the single most relevant one - you may "
         "lightly reword it to flow with your answer, but don't change its meaning or invent a new "
         "one. If no candidates are provided, or none genuinely fit, set recommendation to null.\n"
         "- Keep answer_text to 2-4 sentences."

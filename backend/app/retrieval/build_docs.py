@@ -1,7 +1,7 @@
 """Generate menu/recipe markdown documents from the same recipe data used to
 seed the database, so the retrieval corpus can never drift out of sync with
 what's actually in menu_items/recipe_items. Hand-authored description/prep
-text is layered on top — that's the actual qualitative content retrieval
+text is layered on top - that's the actual qualitative content retrieval
 exists to serve, since it isn't in the structured tables.
 
 Run with: python -m app.retrieval.build_docs
@@ -30,7 +30,7 @@ DISH_NOTES = {
         "prep": "Grilled whole in a coil, sliced at the table, served with hand-cut chips.",
     },
     "Peri-Peri Chicken": {
-        "description": "Chicken basted repeatedly in housemade peri-peri sauce while grilling — spicier than the Grilled Chicken Quarter.",
+        "description": "Chicken basted repeatedly in housemade peri-peri sauce while grilling - spicier than the Grilled Chicken Quarter.",
         "prep": "Basted three times during grilling for a sticky, spicy finish. Ask for mild if the standard sauce is too hot.",
     },
     "Pork Ribs": {
@@ -46,11 +46,11 @@ DISH_NOTES = {
         "prep": "Battered fresh to order and deep fried, served with hand-cut chips and a lemon wedge.",
     },
     "Sadza & Beef Stew": {
-        "description": "A mound of stiff maize-meal sadza served with a rich beef stew — the most traditional Zimbabwean combination on the menu.",
+        "description": "A mound of stiff maize-meal sadza served with a rich beef stew - the most traditional Zimbabwean combination on the menu.",
         "prep": "Sadza is stirred fresh to order; the beef stew is simmered slowly with onion and tomato.",
     },
     "Sadza neMuriwo": {
-        "description": "Sadza served with sauteed covo/rape (a leafy green also called muriwo) — a lighter vegetarian option.",
+        "description": "Sadza served with sauteed covo/rape (a leafy green also called muriwo) - a lighter vegetarian option.",
         "prep": "The greens are sauteed with onion and a little cooking oil, served alongside freshly stirred sadza.",
     },
     "Chips & Fries": {
@@ -62,11 +62,11 @@ DISH_NOTES = {
         "prep": "Shredded fresh and tossed to order; no advance prep held overnight.",
     },
     "Rice & Gravy": {
-        "description": "Steamed rice with a side of gravy — a lighter alternative to sadza.",
+        "description": "Steamed rice with a side of gravy - a lighter alternative to sadza.",
         "prep": "Rice is steamed in batches through service; gravy is made fresh from pan drippings.",
     },
     "Peri-Peri Wings": {
-        "description": "Chicken wings tossed in peri-peri sauce and grilled — a popular starter to share.",
+        "description": "Chicken wings tossed in peri-peri sauce and grilled - a popular starter to share.",
         "prep": "Grilled first, then tossed in sauce just before serving so they stay crisp.",
     },
     "Beef Samosas": {
@@ -74,7 +74,7 @@ DISH_NOTES = {
         "prep": "Filled and folded in-house, fried to order in small batches.",
     },
     "Chicken Livers": {
-        "description": "Pan-fried chicken livers in a peri-peri sauce — a popular starter with regulars.",
+        "description": "Pan-fried chicken livers in a peri-peri sauce - a popular starter with regulars.",
         "prep": "Pan-fried hot and fast to keep the livers tender, finished with peri-peri sauce.",
     },
     "Malva Pudding": {
@@ -82,7 +82,7 @@ DISH_NOTES = {
         "prep": "Baked in batches, warmed and plated to order with a ladle of custard.",
     },
     "Ice Cream Sundae": {
-        "description": "Vanilla ice cream with toppings — the lighter dessert option on the menu.",
+        "description": "Vanilla ice cream with toppings - the lighter dessert option on the menu.",
         "prep": "Scooped to order and finished with toppings at the pass.",
     },
 }

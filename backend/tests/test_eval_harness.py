@@ -1,4 +1,4 @@
-"""Tests for the eval harness's own logic — case loading, gold-query
+"""Tests for the eval harness's own logic - case loading, gold-query
 validity, and scoring math. None of this needs GROQ_API_KEY: it's
 everything in run_eval.py except the actual model calls inside run_case().
 """

@@ -9,14 +9,17 @@ const CONVERSATION_ID = crypto.randomUUID();
 const EXAMPLE_PROMPTS = [
   {
     title: 'Best sellers',
+    description: 'Rank items by units sold',
     text: 'What were my five best-selling items last weekend?',
   },
   {
     title: 'Low margins',
+    description: 'Find underperforming menu lines',
     text: 'Which menu items have the lowest profit margin?',
   },
   {
     title: 'Match days',
+    description: 'Compare beer sales on event days',
     text: 'Did Arsenal match days lift beer sales?',
   },
 ];
@@ -24,13 +27,9 @@ const EXAMPLE_PROMPTS = [
 function BrandIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M8 4h8l-1 12.5a1.5 1.5 0 0 1-1.49 1.35h-3.02A1.5 1.5 0 0 1 9 16.5L8 4Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path d="M7 4h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <rect x="4" y="13" width="3" height="7" rx="1" fill="currentColor" opacity="0.55" />
+      <rect x="10.5" y="9" width="3" height="11" rx="1" fill="currentColor" />
+      <rect x="17" y="5" width="3" height="15" rx="1" fill="currentColor" opacity="0.75" />
     </svg>
   );
 }
@@ -77,57 +76,76 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
-      <header className="app-header">
-        <div className="brand">
-          <div className="brand-icon">
-            <BrandIcon />
-          </div>
-          <div className="brand-text">
-            <span className="brand-mark">PourSight</span>
-            <span className="brand-sub">The Arsenal Bar &amp; Grill · Bindura, Zimbabwe</span>
-          </div>
-        </div>
-        <span className="header-badge">Analytics</span>
-      </header>
-
-      <main className="chat-area">
-        {messages.length === 0 && (
-          <div className="empty-state">
-            <div className="empty-state-icon">
+    <div className="app-page">
+      <div className="app-shell">
+        <header className="app-header">
+          <div className="brand">
+            <div className="brand-icon">
               <BrandIcon />
             </div>
-            <h2>Ask anything about your bar</h2>
-            <p>
-              Plain-English questions about sales, margins, inventory, and match-day trends —
-              answered with charts and recommendations.
-            </p>
-            <div className="example-grid">
-              {EXAMPLE_PROMPTS.map(({ title, text }) => (
-                <button
-                  key={text}
-                  type="button"
-                  className="example-card"
-                  onClick={() => handleAsk(text)}
-                  disabled={pending}
-                >
-                  <span className="example-card-title">{title}</span>
-                  <span className="example-card-text">{text}</span>
-                </button>
-              ))}
+            <div className="brand-text">
+              <span className="brand-mark">PourSight</span>
+              <span className="brand-sub">The Arsenal Bar &amp; Grill · Bindura, Zimbabwe</span>
             </div>
           </div>
-        )}
-        {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
-        ))}
-        {pending && <MessageBubble message={{ id: 'pending', role: 'pending' }} />}
-        <div ref={scrollRef} />
-      </main>
+          <div className="header-meta">
+            <span className="status-pill">
+              <span className="status-dot" aria-hidden="true" />
+              Ready
+            </span>
+            <span className="header-badge">Analytics</span>
+          </div>
+        </header>
 
-      <footer className="app-footer">
-        <QuestionForm onAsk={handleAsk} disabled={pending} />
-      </footer>
+        <main className="chat-area">
+          {messages.length === 0 && (
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <BrandIcon />
+              </div>
+              <p className="empty-state-eyebrow">Business intelligence</p>
+              <h2>Ask questions in plain English</h2>
+              <p className="empty-state-lead">
+                Get grounded answers about sales, margins, inventory, and match-day trends -
+                with charts and actionable recommendations.
+              </p>
+              <div className="example-section">
+                <h3 className="example-section-title">Suggested questions</h3>
+                <div className="example-grid">
+                  {EXAMPLE_PROMPTS.map(({ title, description, text }, index) => (
+                    <button
+                      key={text}
+                      type="button"
+                      className="example-card"
+                      onClick={() => handleAsk(text)}
+                      disabled={pending}
+                    >
+                      <span className="example-card-index">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="example-card-body">
+                        <span className="example-card-title">{title}</span>
+                        <span className="example-card-description">{description}</span>
+                        <span className="example-card-text">{text}</span>
+                      </span>
+                      <span className="example-card-arrow" aria-hidden="true">
+                        →
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          {messages.map((message) => (
+            <MessageBubble key={message.id} message={message} />
+          ))}
+          {pending && <MessageBubble message={{ id: 'pending', role: 'pending' }} />}
+          <div ref={scrollRef} />
+        </main>
+
+        <footer className="app-footer">
+          <QuestionForm onAsk={handleAsk} disabled={pending} />
+        </footer>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 """Live tests for stage 2 (answer generation). Need no key to import the
 module, but actually calling the model is skipped unless GROQ_API_KEY
-is set — see test_nl_to_sql.py for the same pattern and why.
+is set - see test_nl_to_sql.py for the same pattern and why.
 """
 
 import os

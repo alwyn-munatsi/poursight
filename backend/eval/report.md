@@ -1,6 +1,6 @@
 # Evaluation report
 
-> **Status note (2026-07-09):** run after both v2 prompt fixes (see PROMPTS.md Iteration notes). 14/20 cases completed before hitting Groq's free-tier daily token quota again (100K TPD covers roughly 14 of our 20 two-call cases) — the 6 unscored rows below are quota errors, not model failures. Of the 14 that did complete: 13/14 correct on both query correctness and numeric accuracy, 0 hallucinated citations. The one genuine miss, `ecocash_share`, is not yet root-caused (diagnostic attempt itself hit the same quota wall). Re-run the remaining 6 cases and diagnose `ecocash_share` once quota resets.
+> **Status note (2026-07-09):** run after both v2 prompt fixes (see PROMPTS.md Iteration notes). 14/20 cases completed before hitting Groq's free-tier daily token quota again (100K TPD covers roughly 14 of our 20 two-call cases) - the 6 unscored rows below are quota errors, not model failures. Of the 14 that did complete: 13/14 correct on both query correctness and numeric accuracy, 0 hallucinated citations. The one genuine miss, `ecocash_share`, is not yet root-caused (diagnostic attempt itself hit the same quota wall). Re-run the remaining 6 cases and diagnose `ecocash_share` once quota resets.
 
 - Cases: 20 (6 errored)
 - Query correctness: 93%

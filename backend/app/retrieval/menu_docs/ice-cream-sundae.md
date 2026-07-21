@@ -3,7 +3,7 @@
 **Category:** Dessert  
 **Price:** $3.00
 
-Vanilla ice cream with toppings — the lighter dessert option on the menu.
+Vanilla ice cream with toppings - the lighter dessert option on the menu.
 
 ## Ingredients
 - Custard/Ice Cream Mix (0.15 kg per serving)

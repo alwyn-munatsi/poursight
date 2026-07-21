@@ -3,7 +3,7 @@
 **Category:** Grill  
 **Price:** $7.00
 
-Chicken basted repeatedly in housemade peri-peri sauce while grilling — spicier than the Grilled Chicken Quarter.
+Chicken basted repeatedly in housemade peri-peri sauce while grilling - spicier than the Grilled Chicken Quarter.
 
 ## Ingredients
 - Chicken Quarters (0.4 kg per serving)

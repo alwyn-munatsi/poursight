@@ -1,16 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="8" fill="#fff"/>
-  <path
-    d="M10 8h12l-1.2 14.5a2 2 0 0 1-1.98 1.8H13.18a2 2 0 0 1-1.98-1.8L10 8Z"
-    fill="#A8622A"
-    opacity="0.15"
-  />
-  <path
-    d="M11 8h10l-1 12.8a1.5 1.5 0 0 1-1.49 1.35h-5.02A1.5 1.5 0 0 1 12 20.8L11 8Z"
-    stroke="#A8622A"
-    stroke-width="1.5"
-    stroke-linejoin="round"
-  />
-  <path d="M9.5 8h13" stroke="#7C481C" stroke-width="1.5" stroke-linecap="round"/>
-  <ellipse cx="16" cy="22.5" rx="4" ry="1" fill="#3F6B5C" opacity="0.35"/>
+  <rect width="32" height="32" rx="8" fill="#2563EB"/>
+  <rect x="7" y="18" width="3.5" height="7" rx="1" fill="#fff" opacity="0.9"/>
+  <rect x="14.25" y="13" width="3.5" height="12" rx="1" fill="#fff"/>
+  <rect x="21.5" y="9" width="3.5" height="16" rx="1" fill="#fff" opacity="0.75"/>
 </svg>
