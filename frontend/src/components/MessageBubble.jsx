@@ -31,6 +31,17 @@ function QueryDetails({ intent, sql, rowCount, truncated }) {
   );
 }
 
+function PendingSkeleton() {
+  return (
+    <div className="bubble-skeleton" aria-label="PourSight is thinking">
+      <span className="skeleton-line" />
+      <span className="skeleton-line" />
+      <span className="skeleton-line" />
+      <span className="skeleton-chart" />
+    </div>
+  );
+}
+
 export default function MessageBubble({ message }) {
   const { role, text, chart, recommendation, intent, sql, rowCount, truncated } = message;
 
@@ -53,10 +64,8 @@ export default function MessageBubble({ message }) {
   if (role === 'pending') {
     return (
       <div className="message-row message-row-assistant">
-        <div className="bubble bubble-assistant bubble-pending">
-          <span className="pulse-dot" />
-          <span className="pulse-dot" />
-          <span className="pulse-dot" />
+        <div className="bubble bubble-assistant">
+          <PendingSkeleton />
         </div>
       </div>
     );
@@ -65,6 +74,7 @@ export default function MessageBubble({ message }) {
   return (
     <div className="message-row message-row-assistant">
       <div className="bubble bubble-assistant">
+        {intent && <span className="intent-badge">{intent}</span>}
         <p className="answer-text">{text}</p>
         <ChartView chart={chart} />
         {recommendation && <RecommendationCard text={recommendation} />}

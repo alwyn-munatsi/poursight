@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const EXAMPLE_QUESTIONS = [
-  'What were my five best-selling items last weekend?',
-  'Which menu items have the lowest profit margin?',
-  'Did Arsenal match days lift beer sales?',
-];
-
-export default function QuestionForm({ onAsk, disabled, showExamples }) {
+export default function QuestionForm({ onAsk, disabled }) {
   const [value, setValue] = useState('');
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+  }, [value]);
 
   function submit(question) {
     const trimmed = question.trim();
@@ -16,23 +18,15 @@ export default function QuestionForm({ onAsk, disabled, showExamples }) {
     setValue('');
   }
 
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submit(value);
+    }
+  }
+
   return (
     <div className="question-form">
-      {showExamples && (
-        <div className="example-chips">
-          {EXAMPLE_QUESTIONS.map((q) => (
-            <button
-              key={q}
-              type="button"
-              className="example-chip"
-              onClick={() => submit(q)}
-              disabled={disabled}
-            >
-              {q}
-            </button>
-          ))}
-        </div>
-      )}
       <form
         className="input-row"
         onSubmit={(e) => {
@@ -40,10 +34,12 @@ export default function QuestionForm({ onAsk, disabled, showExamples }) {
           submit(value);
         }}
       >
-        <input
-          type="text"
+        <textarea
+          ref={textareaRef}
+          rows={1}
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Ask about sales, margins, inventory..."
           disabled={disabled}
           aria-label="Ask PourSight a question"
@@ -52,6 +48,9 @@ export default function QuestionForm({ onAsk, disabled, showExamples }) {
           Ask
         </button>
       </form>
+      <p className="input-hint">
+        Press <kbd>Enter</kbd> to send · <kbd>Shift</kbd>+<kbd>Enter</kbd> for a new line
+      </p>
     </div>
   );
 }

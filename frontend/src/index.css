@@ -1,47 +1,37 @@
 :root {
-  --bg: #e7e1d2;
-  --surface: #fbf8f1;
-  --surface-raised: #ffffff;
-  --ink: #23201a;
-  --ink-soft: #5b5546;
-  --line: #d3cbb6;
-  --line-strong: #b7ad91;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-muted: #f7f8fa;
+  --surface-raised: #f3f4f6;
+  --ink: #111827;
+  --ink-soft: #6b7280;
+  --line: #e5e7eb;
+  --line-strong: #d1d5db;
   --copper: #a8622a;
+  --copper-hover: #8f5324;
   --copper-ink: #7c481c;
+  --copper-soft: #fdf6ef;
   --bottle: #3f6b5c;
-  --bottle-soft: #e4eee9;
-  --critical: #b0503b;
-  --critical-soft: #f3e4de;
-  --chart-grid: #d3cbb6;
+  --bottle-soft: #eef5f2;
+  --critical: #dc2626;
+  --critical-soft: #fef2f2;
+  --chart-grid: #e5e7eb;
+  --shadow-sm: 0 1px 2px rgb(17 24 39 / 0.04);
+  --shadow-md: 0 4px 24px rgb(17 24 39 / 0.06);
+  --shadow-lg: 0 12px 40px rgb(17 24 39 / 0.08);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
 
-  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-display: ui-serif, Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Times New Roman', serif;
-  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Consolas, 'Roboto Mono', monospace;
+  --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Consolas, monospace;
 
-  color-scheme: light dark;
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1b1914;
-    --surface: #242019;
-    --surface-raised: #2b261d;
-    --ink: #ede6d6;
-    --ink-soft: #b8af9a;
-    --line: #3a3327;
-    --line-strong: #4e4634;
-    --copper: #d6903f;
-    --copper-ink: #f0b372;
-    --bottle: #6fa089;
-    --bottle-soft: #24332c;
-    --critical: #d97462;
-    --critical-soft: #34241f;
-    --chart-grid: #3a3327;
-  }
 }
 
 * {
@@ -63,6 +53,7 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font-family: inherit;
 }
