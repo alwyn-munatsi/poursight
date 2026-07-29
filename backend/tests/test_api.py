@@ -38,6 +38,7 @@ def test_ask_returns_grounded_answer_for_lowest_margin_question():
     assert response.status_code == 200
     body = response.json()
     assert body["answer_text"]
+    assert body["recommendation"] and body["recommendation"].strip()
     assert body["sql"].lower().startswith(("select", "with"))
     assert body["row_count"] > 0
     assert body["chart"] is not None

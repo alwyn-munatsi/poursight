@@ -1,8 +1,9 @@
 """Stage 2: turn a query result into a grounded natural-language answer.
 
 Forced tool_choice again, so the response is always the AnswerPlan shape.
-Recommendations are never freely generated here - the model must pick one of
-the playbook's candidate strings (light rewording is fine) or return null.
+Every answer gets a recommendation: the model prefers a playbook candidate
+when one was matched, and otherwise composes its own - grounded in the rows
+it was given, not invented advice. recommendation is never null.
 """
 
 import json
@@ -32,10 +33,12 @@ TOOL = {
                     "description": "2-4 sentence plain-English answer to the question.",
                 },
                 "recommendation": {
-                    "type": ["string", "null"],
+                    "type": "string",
                     "description": (
-                        "One of the candidate recommendations, lightly reworded to fit the answer, "
-                        "or null if none were provided or none genuinely fit."
+                        "A short, specific, actionable recommendation - never blank. Prefer one of "
+                        "the candidate recommendations (lightly reworded is fine) when one is given "
+                        "and fits. Otherwise, compose your own recommendation grounded directly in "
+                        "the rows you were given."
                     ),
                 },
                 "cited_values": {
@@ -63,10 +66,14 @@ def build_system_prompt() -> str:
         "counts, percentages) must come directly from the provided rows.\n"
         "- List every such fact in cited_values, exactly as given (same type, same spelling/precision) "
         "- this includes item/category names, not just numbers.\n"
-        "- If candidate recommendations are provided, choose the single most relevant one - you may "
-        "lightly reword it to flow with your answer, but don't change its meaning or invent a new "
-        "one. If no candidates are provided, or none genuinely fit, set recommendation to null.\n"
-        "- Keep answer_text to 2-4 sentences."
+        "- Every answer needs a recommendation - it is never blank. If a candidate recommendation is "
+        "provided and genuinely fits, use it (light rewording to flow with your answer is fine, but "
+        "don't change its meaning). If no candidate is provided, or none fit, write your own short, "
+        "specific, actionable recommendation yourself, directly tied to the numbers in these rows - "
+        "e.g. what to watch, restock, price, or staff for, given what this result actually shows. "
+        "Never write a generic recommendation that ignores the data, and never invent a new number or "
+        "fact to justify it that wasn't already in the rows or in answer_text.\n"
+        "- Keep answer_text to 2-4 sentences, and the recommendation to one sentence."
     )
 
 

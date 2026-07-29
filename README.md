@@ -86,14 +86,15 @@ cd backend
 python -m eval.run_eval
 ```
 
-Scores three things per case, writing `backend/eval/report.md`:
+Scores four things per case, writing `backend/eval/report.md`:
 - **Query correctness** - does the model's generated SQL actually retrieve the right data?
 - **Numeric accuracy** - does the final answer state the right number/fact?
 - **Hallucination rate** - of everything the answer cites, what fraction wasn't actually in its own query result?
+- **Recommendation coverage** - what fraction of completed cases got a non-blank recommendation? Every answer is expected to have one (see `PROMPTS.md` v3) - this metric exists to catch a regression back to `null`.
 
 Each case supplies a hand-authored `gold_sql` (trusted, single `gold_value` column) rather than an expected SQL string to match against - two different `SELECT`s can both be correct if they return the same data, so the harness checks results, not query text. See `PROMPTS.md` for the full design rationale.
 
-**Latest results** (see `backend/eval/report.md` for the per-case breakdown, and its status note for why this isn't a same-day re-run): 20/20 cases completed, **95% query correctness, 75% numeric accuracy, 0% hallucination rate**. Groq's free tier caps at 100K tokens/day, which is enough for normal development but not for repeated full 20-case runs in one sitting - budget for that if evaluating further.
+**Latest results** (see `backend/eval/report.md` for the per-case breakdown): 19/20 cases completed, **95% query correctness, 95% numeric accuracy, 0% hallucination rate (0/44 citations), 100% recommendation coverage**. The one miss (`retrieval_dish_price`) was a SQL syntax error in the model's own generated query, caught and reported cleanly rather than crashing the run. Groq's free tier caps at 100K tokens/day, which is enough for normal development but not for repeated full 20-case runs in one sitting - budget for that if evaluating further.
 
 ## Deployment
 

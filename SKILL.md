@@ -4,7 +4,7 @@ A reusable skill definition for PourSight's natural-language-to-grounded-answer 
 
 ## What it does
 
-Given a plain-English question about a restaurant/bar's sales, inventory, or menu performance, returns a grounded answer, a chart-ready data shape, and (when relevant) a short recommendation drawn from a fixed playbook - never invented numbers. Every number the answer states is traceable back to a value in the query result that actually produced it.
+Given a plain-English question about a restaurant/bar's sales, inventory, or menu performance, returns a grounded answer, a chart-ready data shape, and a short recommendation - never invented numbers. Every question gets a recommendation: one drawn from a fixed playbook when a rule matches, otherwise one the model composes itself, still grounded in the same data. Every number the answer states is traceable back to a value in the query result that actually produced it.
 
 ## Invocation
 
@@ -42,7 +42,7 @@ Given a plain-English question about a restaurant/bar's sales, inventory, or men
 }
 ```
 
-`chart` is `null` for a question with no rows to plot; `chart.type` is one of `bar`, `line`, `pie`, `single_value`, or `table` (table is the fallback when there's no numeric column to plot). `recommendation` is `null` when no playbook rule matched.
+`chart` is `null` for a question with no rows to plot; `chart.type` is one of `bar`, `line`, `pie`, `single_value`, or `table` (table is the fallback when there's no numeric column to plot). `recommendation` is always present - never `null` - whether or not a playbook rule matched.
 
 ## Pipeline (what happens between input and output)
 

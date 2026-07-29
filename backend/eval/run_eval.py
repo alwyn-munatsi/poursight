@@ -63,12 +63,17 @@ def run_case(case: dict) -> dict:
             retrieved_context=context,
         )
 
-        ungrounded = ungrounded_values(answer.cited_values, query_result.rows)
+        extra_text = [m.recommendation for m in matches]
+        if context:
+            extra_text.append(context)
+        ungrounded = ungrounded_values(answer.cited_values, query_result.rows, extra_text)
 
         result.update(
             sql=plan.sql,
             row_count=query_result.row_count,
             answer_text=answer.answer_text,
+            recommendation=answer.recommendation,
+            has_recommendation=bool(answer.recommendation.strip()),
             cited_values=answer.cited_values,
             query_correct=_value_in(gold_value, row_values) if gold_value is not None else None,
             answer_correct=_value_in(gold_value, answer.cited_values) if gold_value is not None else None,
@@ -78,7 +83,8 @@ def run_case(case: dict) -> dict:
         )
     except Exception as exc:  # one bad case must not stop the rest of the harness
         result.update(
-            sql=None, row_count=None, answer_text=None, cited_values=[],
+            sql=None, row_count=None, answer_text=None, recommendation=None,
+            has_recommendation=False, cited_values=[],
             query_correct=False, answer_correct=False,
             cited_count=0, ungrounded_count=0, ungrounded=[],
             error=str(exc),
@@ -99,6 +105,9 @@ def summarize(results: list[dict]) -> dict:
         "query_correctness": (sum(1 for r in scored if r["query_correct"]) / len(scored)) if scored else 0.0,
         "numeric_accuracy": (sum(1 for r in scored if r["answer_correct"]) / len(scored)) if scored else 0.0,
         "hallucination_rate": (total_ungrounded / total_cited) if total_cited else 0.0,
+        "recommendation_coverage": (
+            sum(1 for r in completed if r["has_recommendation"]) / len(completed)
+        ) if completed else 0.0,
         "total_citations": total_cited,
         "ungrounded_citations": total_ungrounded,
     }
@@ -113,13 +122,15 @@ def write_report(results: list[dict], summary: dict, path: Path = REPORT_PATH) -
         f"- Numeric accuracy: {summary['numeric_accuracy']:.0%}",
         f"- Hallucination rate: {summary['hallucination_rate']:.0%} "
         f"({summary['ungrounded_citations']}/{summary['total_citations']} citations ungrounded)",
+        f"- Recommendation coverage: {summary['recommendation_coverage']:.0%} "
+        "(every completed case is expected to have one - see PROMPTS.md v3)",
         "",
-        "| id | query correct | answer correct | ungrounded citations | error |",
-        "|---|---|---|---|---|",
+        "| id | query correct | answer correct | has recommendation | ungrounded citations | error |",
+        "|---|---|---|---|---|---|",
     ]
     for r in results:
         lines.append(
-            f"| {r['id']} | {r['query_correct']} | {r['answer_correct']} | "
+            f"| {r['id']} | {r['query_correct']} | {r['answer_correct']} | {r['has_recommendation']} | "
             f"{r['ungrounded_count']}/{r['cited_count']} | {r['error'] or ''} |"
         )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

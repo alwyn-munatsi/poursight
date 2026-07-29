@@ -24,8 +24,20 @@ class QueryPlan(BaseModel):
 
 
 class AnswerPlan(BaseModel):
-    """Stage 2 output: the query result turned into a grounded answer."""
+    """Stage 2 output: the query result turned into a grounded answer.
+
+    recommendation is required - every question gets one, whether it's a
+    playbook match or a recommendation the model composes itself grounded in
+    the rows it was given (see answer_gen.py's system prompt).
+    """
 
     answer_text: str
-    recommendation: str | None = None
+    recommendation: str
     cited_values: list = []
+
+    @field_validator("recommendation")
+    @classmethod
+    def must_not_be_blank(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("recommendation must not be blank - every answer needs one")
+        return value

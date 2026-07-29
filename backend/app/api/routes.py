@@ -34,7 +34,7 @@ class AskRequest(BaseModel):
 
 class AskResponse(BaseModel):
     answer_text: str
-    recommendation: str | None
+    recommendation: str
     chart: dict | None
     cited_values: list
     intent: str
@@ -88,9 +88,8 @@ def ask(request: AskRequest) -> AskResponse:
         raise HTTPException(status_code=422, detail=f"Could not generate an answer: {exc}") from exc
 
     logger.info(
-        "question=%r intent=%r rows=%d truncated=%s playbook_matches=%d recommendation=%s",
+        "question=%r intent=%r rows=%d truncated=%s playbook_matches=%d",
         question, plan.intent, result.row_count, result.truncated, len(matches),
-        bool(answer.recommendation),
     )
 
     return AskResponse(

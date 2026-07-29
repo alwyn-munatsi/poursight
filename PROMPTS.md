@@ -61,12 +61,12 @@ Implemented in `backend/app/llm/answer_gen.py`. Forces `tool_choice` on `emit_an
 - `match_day_lift` - a row pair keyed by `is_match_day` (0/1) where the match-day value is ≥15% higher.
 - `concentrated_best_sellers` - a ranked list (≥3 rows) where the top row is ≥30% of the total.
 
-The candidates (if any) are passed into the stage-2 prompt as plain text; the model is instructed to pick at most one, may lightly reword it, but must not invent a new one or alter its meaning. `recommendation: null` when no rule fires.
+The candidates (if any) are passed into the stage-2 prompt as plain text. **`recommendation` is required - never `null`.** The model prefers a matched candidate (may lightly reword it, must not alter its meaning), and when the playbook returns nothing it composes its own recommendation instead, grounded in the same rows already provided (no new invented facts). `schemas.py::AnswerPlan.recommendation` is a required, non-blank `str` (changed 2026-07-29 from `str | None` per explicit user request that every question produce a recommendation) - a blank/missing value now fails Pydantic validation rather than passing through as `null`.
 
 **Rules given to the model:**
 - Every number in `answer_text` must come from the provided rows; list it in `cited_values` exactly as given.
-- Keep `answer_text` to 2-4 sentences.
-- Recommendation must be chosen from the candidates or `null` - never freely generated.
+- Keep `answer_text` to 2-4 sentences, the recommendation to one.
+- Prefer a playbook candidate when one fits; otherwise write one directly tied to the numbers already in the answer - never a generic recommendation that ignores the data, and never a new fact invented just to support it.
 
 ## Retrieval (feeds into Stage 2)
 
@@ -100,3 +100,9 @@ One real bug, not just a scoring artifact: `average_order_value` failed both que
 Most of the remaining v1 numeric-accuracy misses (`best_selling_item_overall`, `best_sellers_last_weekend`, `lowest_margin_item`, `cheapest_item`) were all cases with a **string** gold value (an item name) where `query_correct` was `True` - the SQL retrieved the right row, but the model didn't always echo that exact name into `cited_values`, likely because the stage-2 prompt's wording ("every *number* you state... list it in cited_values") reads as number-specific. The model treats it more loosely in practice - several other string-valued cases (`best_selling_category`, `most_expensive_item`, `low_stock_ingredient`) passed - so this reads as prompt-wording looseness rather than a hard rule.
 
 **v2 also reworded the Stage 2 prompt** (`answer_gen.py::build_system_prompt()`) from "every *number*... list it in cited_values" to "every number or *name*... this includes item/category names, not just numbers" - tightening exactly the ambiguity above. Re-running the full 20-case harness after both v2 changes: see the current numbers in README/eval/report.md rather than trusting this note to stay in sync - re-run `python -m eval.run_eval` any time this file's v2 date is older than the last prompt change.
+
+**v3 (2026-07-29):** changed by explicit user request - every answer must carry a recommendation, never `null`. Previously, roughly 7 of the 20 canonical eval questions (the single-aggregate ones like `total_orders`, `total_revenue`, `beer_item_count`) structurally could never trigger any of the 4 playbook rules, so `recommendation` came back `null` for a large share of realistic questions. `AnswerPlan.recommendation` is now a required, non-blank `str`, and the Stage 2 prompt instructs the model to fall back to composing its own recommendation - still grounded in the rows it was given, never a new invented fact - whenever the playbook has no match. The playbook itself is unchanged and still tried first; this only changes what happens when it returns `[]`.
+
+Live testing surfaced a real gap this change exposed (not a v3 regression, a pre-existing blind spot): once the model always writes a recommendation, it more often restates facts that are true but come from somewhere other than the SQL rows - a playbook candidate's own threshold ("below the 45% target") or a retrieved menu doc's metadata ("part of the Grill category"). `grounding.py::is_grounded()`/`ungrounded_values()` only checked the query rows, so these correct citations were being scored as hallucinated. Fixed by adding an `extra_text` parameter: values are checked against the rows first (numeric-tolerant), then as a substring match against the playbook candidates and retrieved context the model was actually shown. Every caller (`run_eval.py`, the pipeline/answer-gen tests) now passes both sources through.
+
+Full 20-case re-run after v3: 19/20 completed, **95% query correctness, 95% numeric accuracy, 0% hallucination rate (0/44 citations), 100% recommendation coverage**. The one miss, `retrieval_dish_price`, failed on a SQL syntax error in the model's own generated query (`no such column: ri.quantity_per_serving` - a malformed join, not an infrastructure bug); reported honestly rather than retried into a false pass.

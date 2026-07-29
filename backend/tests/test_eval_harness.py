@@ -18,8 +18,6 @@ def test_load_cases_returns_15_to_20_cases_with_required_fields():
 
 
 def test_every_gold_sql_runs_and_returns_a_single_gold_value():
-    # Regression guard: if the schema ever changes, this catches a broken
-    # gold_sql immediately instead of only surfacing it mid eval run.
     for case in load_cases():
         result = run_query(case["gold_sql"], tuple(case.get("gold_params", [])))
         assert result.row_count == 1, f"{case['id']}: expected exactly one gold row"
@@ -30,13 +28,13 @@ def test_every_gold_sql_runs_and_returns_a_single_gold_value():
 def test_summarize_computes_rates_correctly():
     results = [
         {"error": None, "gold_value": "x", "query_correct": True, "answer_correct": True,
-         "cited_count": 2, "ungrounded_count": 0},
+         "cited_count": 2, "ungrounded_count": 0, "has_recommendation": True},
         {"error": None, "gold_value": "y", "query_correct": True, "answer_correct": False,
-         "cited_count": 3, "ungrounded_count": 1},
+         "cited_count": 3, "ungrounded_count": 1, "has_recommendation": True},
         {"error": None, "gold_value": "z", "query_correct": False, "answer_correct": False,
-         "cited_count": 1, "ungrounded_count": 1},
+         "cited_count": 1, "ungrounded_count": 1, "has_recommendation": False},
         {"error": "boom", "gold_value": None, "query_correct": False, "answer_correct": False,
-         "cited_count": 0, "ungrounded_count": 0},
+         "cited_count": 0, "ungrounded_count": 0, "has_recommendation": False},
     ]
     summary = summarize(results)
 
@@ -48,6 +46,7 @@ def test_summarize_computes_rates_correctly():
     assert summary["total_citations"] == 6
     assert summary["ungrounded_citations"] == 2
     assert summary["hallucination_rate"] == 2 / 6
+    assert summary["recommendation_coverage"] == 2 / 3
 
 
 def test_summarize_handles_no_scored_cases_without_dividing_by_zero():
@@ -55,6 +54,7 @@ def test_summarize_handles_no_scored_cases_without_dividing_by_zero():
     assert summary == {
         "cases": 0, "completed": 0, "errors": 0,
         "query_correctness": 0.0, "numeric_accuracy": 0.0, "hallucination_rate": 0.0,
+        "recommendation_coverage": 0.0,
         "total_citations": 0, "ungrounded_citations": 0,
     }
 
@@ -62,9 +62,11 @@ def test_summarize_handles_no_scored_cases_without_dividing_by_zero():
 def test_write_report_produces_markdown_with_summary_and_rows(tmp_path):
     results = [
         {"id": "case_a", "query_correct": True, "answer_correct": True,
-         "ungrounded_count": 0, "cited_count": 1, "error": None},
+         "ungrounded_count": 0, "cited_count": 1, "has_recommendation": True, "error": None},
     ]
-    summary = summarize([{**results[0], "gold_value": "x", "cited_count": 1, "ungrounded_count": 0}])
+    summary = summarize(
+        [{**results[0], "gold_value": "x", "cited_count": 1, "ungrounded_count": 0}]
+    )
     out_path = tmp_path / "report.md"
 
     write_report(results, summary, path=out_path)
@@ -73,3 +75,4 @@ def test_write_report_produces_markdown_with_summary_and_rows(tmp_path):
     assert "# Evaluation report" in text
     assert "case_a" in text
     assert "Query correctness" in text
+    assert "Recommendation coverage" in text

@@ -50,7 +50,12 @@ def test_question_to_grounded_answer(question):
         retrieved_context=context,
     )
 
+    extra_text = [m.recommendation for m in matches]
+    if context:
+        extra_text.append(context)
+
     assert answer.answer_text
-    assert is_grounded(answer.cited_values, result.rows), (
+    assert answer.recommendation.strip(), f"Missing recommendation for {question!r}"
+    assert is_grounded(answer.cited_values, result.rows, extra_text), (
         f"Ungrounded citation for {question!r}: {answer.cited_values} vs {result.rows[:5]}"
     )
