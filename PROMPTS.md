@@ -106,3 +106,15 @@ Most of the remaining v1 numeric-accuracy misses (`best_selling_item_overall`, `
 Live testing surfaced a real gap this change exposed (not a v3 regression, a pre-existing blind spot): once the model always writes a recommendation, it more often restates facts that are true but come from somewhere other than the SQL rows - a playbook candidate's own threshold ("below the 45% target") or a retrieved menu doc's metadata ("part of the Grill category"). `grounding.py::is_grounded()`/`ungrounded_values()` only checked the query rows, so these correct citations were being scored as hallucinated. Fixed by adding an `extra_text` parameter: values are checked against the rows first (numeric-tolerant), then as a substring match against the playbook candidates and retrieved context the model was actually shown. Every caller (`run_eval.py`, the pipeline/answer-gen tests) now passes both sources through.
 
 Full 20-case re-run after v3: 19/20 completed, **95% query correctness, 95% numeric accuracy, 0% hallucination rate (0/44 citations), 100% recommendation coverage**. The one miss, `retrieval_dish_price`, failed on a SQL syntax error in the model's own generated query (`no such column: ri.quantity_per_serving` - a malformed join, not an infrastructure bug); reported honestly rather than retried into a false pass.
+
+**v4:** root-caused the `retrieval_dish_price` miss. `SCHEMA_DESCRIPTION`'s `recipe_items` entry only said it "links menu_items to the ingredients" - it never showed the actual join columns or that `recipe_items` needs its own alias before referencing `alias.quantity_per_serving`, and none of the 4 few-shot examples touched this table. Left to improvise a 3-table join from a one-line description, the model referenced `ri.quantity_per_serving` without ever establishing `ri` as an alias for `recipe_items` in a `JOIN` clause - a `no such column` error, not an authorization denial. Fixed the same way as the `average_order_value` miss (v2): added explicit join-column guidance to the schema note, plus a 5th few-shot example for exactly this question, using a verified-working query:
+
+```sql
+SELECT mi.name AS item_name, mi.price_usd, mi.cost_usd, i.name AS ingredient_name, ri.quantity_per_serving
+FROM menu_items mi
+JOIN recipe_items ri ON ri.item_id = mi.item_id
+JOIN ingredients i ON i.ingredient_id = ri.ingredient_id
+WHERE mi.name = ?
+```
+
+Added to `EXAMPLE_QUESTIONS` in `test_nl_to_sql.py` so this exact question is now regression-tested going forward, not just fixed once and forgotten.

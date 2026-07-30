@@ -46,6 +46,7 @@ EXAMPLE_QUESTIONS = [
     "What were my five best-selling items last weekend?",
     "Which menu items have the lowest profit margin?",
     "Did Arsenal match days lift beer sales?",
+    "What's in the Peri-Peri Chicken and how much does it cost?",
 ]
 
 

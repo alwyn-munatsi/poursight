@@ -23,7 +23,11 @@ SCHEMA_DESCRIPTION = """\
 - ingredients(ingredient_id, name, unit, unit_cost_usd, stock_on_hand, reorder_level)
     a current stock snapshot, not a movement ledger.
 - recipe_items(item_id, ingredient_id, quantity_per_serving)
-    links menu_items to the ingredients used to make them.
+    links menu_items to the ingredients used to make them. To list what's in a dish,
+    join menu_items.item_id = recipe_items.item_id and
+    recipe_items.ingredient_id = ingredients.ingredient_id - always alias recipe_items
+    in the JOIN clause (e.g. "JOIN recipe_items ri ON ...") before referencing its
+    columns as ri.column_name, or the alias won't exist and the query will fail.
 - fx_rates(rate_date, usd_to_zwg)
     illustrative daily USD -> ZWG (Zimbabwe Gold) exchange rate.
 - match_days(match_date, opponent, is_home, competition, kickoff_local)
@@ -72,6 +76,15 @@ Q: "What is the average order value?"
   "params": [],
   "chart_type": "single_value",
   "needs_retrieval": false
+}
+
+Q: "What's in the Peri-Peri Chicken and how much does it cost?"
+{
+  "intent": "Ingredients and price/cost of the Peri-Peri Chicken",
+  "sql": "SELECT mi.name AS item_name, mi.price_usd, mi.cost_usd, i.name AS ingredient_name, ri.quantity_per_serving FROM menu_items mi JOIN recipe_items ri ON ri.item_id = mi.item_id JOIN ingredients i ON i.ingredient_id = ri.ingredient_id WHERE mi.name = ?",
+  "params": ["Peri-Peri Chicken"],
+  "chart_type": "bar",
+  "needs_retrieval": true
 }\
 """
 
